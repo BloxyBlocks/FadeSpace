@@ -1,0 +1,22 @@
+name: fadespace_realtime
+description: Cliente WebSocket compatible con Reverb/Pusher, reconexión y estado de conexión.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
+
+dependencies:
+  fadespace_core: ^0.1.0
+  flutter:
+    sdk: flutter
+  web_socket_channel: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^11.0.0
+
+flutter:

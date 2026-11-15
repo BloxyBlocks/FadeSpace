@@ -1,0 +1,33 @@
+{
+  "transport": "reverb-pusher-protocol",
+  "url": "ws://127.0.0.1:8080",
+  "probe_id": "01M7EG5QRAYY3AN1BT80QJXJER",
+  "measurement": "received_at_utc - emitted_at_utc",
+  "samples_received": 4,
+  "p50_ms": 221.333,
+  "p95_ms": 258.244,
+  "min_ms": 205.475,
+  "max_ms": 258.244,
+  "samples": [
+    {
+      "sequence": 1,
+      "latency_ms": 258.244,
+      "received_at": "2026-11-15T02:21:55.597238Z"
+    },
+    {
+      "sequence": 2,
+      "latency_ms": 221.333,
+      "received_at": "2026-11-15T02:21:56.078460Z"
+    },
+    {
+      "sequence": 3,
+      "latency_ms": 218.676,
+      "received_at": "2026-11-15T02:21:56.557658Z"
+    },
+    {
+      "sequence": 4,
+      "latency_ms": 205.475,
+      "received_at": "2026-11-15T02:21:57.022212Z"
+    }
+  ]
+}

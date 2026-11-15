@@ -1,0 +1,34 @@
+name: barber_app
+description: App del barbero de FadeSpace — Modo Silla, agenda en vivo y cobro en un toque.
+publish_to: none
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
+
+dependencies:
+  cupertino_ui: ^1.1.6
+  fadespace_api: ^0.1.0
+  fadespace_core: ^0.1.0
+  fadespace_realtime: ^0.1.0
+  fadespace_ui: ^0.1.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.5.0
+  go_router: ^18.1.4
+  intl: ^0.20.2
+  material_ui: ^1.11.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^11.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+

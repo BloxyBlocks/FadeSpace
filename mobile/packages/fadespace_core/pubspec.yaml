@@ -1,0 +1,21 @@
+name: fadespace_core
+description: Modelos, dinero exacto, errores de dominio y utilidades compartidas de FadeSpace.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^11.0.0
+
+flutter:

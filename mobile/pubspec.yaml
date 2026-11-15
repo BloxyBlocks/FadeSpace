@@ -1,0 +1,37 @@
+name: fadespace_mobile
+description: Monorepo Flutter de FadeSpace (app del barbero, PWA del cliente y paquetes compartidos).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.14.0
+
+workspace:
+  - apps/barber_app
+  - apps/client_pwa
+  - packages/fadespace_api
+  - packages/fadespace_core
+  - packages/fadespace_realtime
+  - packages/fadespace_ui
+
+dev_dependencies:
+  melos: ^8.10.1
+  very_good_analysis: ^11.0.0
+
+melos:
+  scripts:
+    analyze:
+      description: Analiza todos los paquetes sin advertencias.
+      run: melos exec -- flutter analyze
+    test:
+      description: Ejecuta las pruebas de todos los paquetes que tengan carpeta test/.
+      run: melos exec --dir-exists=test -- flutter test
+    format:
+      description: Verifica el formato sin modificarlo.
+      run: melos exec -- dart format --output=none --set-exit-if-changed .
+    format:fix:
+      description: Formatea el código.
+      run: melos exec -- dart format .
+    gen:l10n:
+      description: Regenera las traducciones de las apps.
+      run: melos exec --dir-exists=l10n -- flutter gen-l10n

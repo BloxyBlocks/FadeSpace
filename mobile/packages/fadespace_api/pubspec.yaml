@@ -1,0 +1,22 @@
+name: fadespace_api
+description: Cliente HTTP de FadeSpace (tenant, token, Idempotency-Key y errores de dominio).
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
+
+dependencies:
+  dio: ^5.11.1
+  fadespace_core: ^0.1.0
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^11.0.0
+
+flutter:
