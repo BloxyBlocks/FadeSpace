@@ -1,7 +1,7 @@
 # Tareas — FadeSpace
 
-**Versión:** 1.0  
-**Estado:** F0 en curso · F1–F3 pendientes  
+**Versión:** 1.1  
+**Estado:** F0 cerrada en G2 (2026-11-17) · validación de infraestructura trasladada a T-100 · F1–F3 pendientes  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Depende de:** `02-plan.md`
 
@@ -28,16 +28,16 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
       → `backend/` con PHP **8.4** (Pest 5 exige `^8.4`; ver ADR-010), `pint.json` con `declare_strict_types`, `phpstan.neon` nivel 8, Pest 5 con pruebas de arquitectura y `preventLazyLoading` en `EloquentServiceProvider`. `composer quality` en verde.
 - [x] **T-006** Pruebas de arquitectura (Pest Arch / Deptrac): `Domain` no importa `Illuminate`, `Application` no importa `Http`, Eloquent solo en `Infrastructure`. Dep. T-005. _(C-07)_
       → `backend/tests/Architecture/LayersTest.php` en verde.
-- [ ] **T-007** **Aprobación G1 y G2:** revisión humana de constitución, spec y plan; resolver o aceptar las preguntas abiertas OQ-01…OQ-07. _(C-16)_
-      → **Bloqueada por revisión humana.** No se marca: requiere firma de G1/G2 y decisión sobre OQ-01…OQ-07 (ver `docs/status/E-01-report.md` §4).
+- [x] **T-007** **Aprobación G1 y G2:** revisión humana de constitución, spec y plan; resolver o aceptar las preguntas abiertas OQ-01…OQ-07. _(C-16)_
+      → **Aprobada el 2026-11-17** por el autor: G1 y G2 firmadas; OQ-01…OQ-05 y OQ-07 aceptadas y OQ-06 resuelta con ADR-005 (`01-spec.md` §12, acta en §14).
 - [~] **T-008** *Spike* de tiempo real: Reverb + cliente Flutter (móvil y web); medir latencia commit → cliente con `emitted_at`; registrar **ADR-004**. _(RNF-01, C-09)_
-      → Medido en local: 40/40 eventos, p50 **17,808 ms**, p95 **18,820 ms** (`spikes/t008/`), ADR-004 escrito y cliente en `fadespace_realtime`. **Pendiente:** validación en dispositivo real y bajo carga (T-206/T-207) y captura desde web.
+      → Medido en local: 40/40 eventos, p50 **17,808 ms**, p95 **18,820 ms** (`spikes/t008/`), ADR-004 escrito y cliente en `fadespace_realtime`. **Pendiente:** validación en dispositivo real y bajo carga (T-206/T-207).
 - [x] **T-009** *Spike* de peso y TTI de Flutter Web en 3G; decidir **ADR-005** (Flutter Web vs. página de reserva liviana). _(RNF-06, OQ-06)_
-      → Medido: primera carga real **2,32 MB** (> 2 MB de RNF-06), FCP 4,67 s, sin LCP/TTI medibles; variante wasm 1,90 MB como mejor caso (`spikes/t009/`). **ADR-005 ratificado el 2026-11-14**: página liviana para el embudo público; la medición de TTI en dispositivo real queda en T-164 (F1).
+      → Medido: primera carga real **2,32 MB** (> 2 MB de RNF-06), FCP 4,67 s, sin LCP/TTI medibles; variante wasm 1,90 MB como mejor caso (`spikes/t009/`). **ADR-005 ratificado el 2026-11-14 y aplicado el 2026-11-17**: página Blade/Alpine para el embudo público; el presupuesto definitivo (≤ 250 KB, TTI ≤ 3 s) se verifica en T-164 (F1).
 - [~] **T-010** Docker Compose local: PHP-FPM, Nginx, MySQL 8, Redis 7, Mailpit, Reverb. Dep. T-005. _(RNF-18)_
-      → `compose.yaml` + `infra/docker/{php,nginx}` escritos (6 servicios, *healthchecks*, redes y volúmenes). **Pendiente:** validación con `docker compose config/up`; Docker no está instalado en el entorno de F0.
+      → `compose.yaml` + `infra/docker/{php,nginx}` escritos (6 servicios, *healthchecks*, redes y volúmenes). **Bloqueo externo:** sin Docker en F0; la validación con `docker compose config/up` y migraciones se traslada a **T-100** (precondición de F1).
 - [~] **T-011** Pipeline de CI: Pint, Larastan, Pest, `composer audit`, `flutter analyze`, `flutter test`; protección de ramas. Dep. T-005, T-012. _(C-08, C-15, RNF-13)_
-      → `.github/workflows/ci.yml` (jobs backend/mobile/infra) y política de ramas (`infra/github/branch-protection.json` + `scripts/apply-branch-protection.ps1`, `docs/ci.md`). **Pendiente:** ejecutar en GitHub y aplicar la protección real; no hay repositorio remoto.
+      → `.github/workflows/ci.yml` (jobs backend/mobile/infra) y política de ramas (`infra/github/branch-protection.json` + `scripts/apply-branch-protection.ps1`, `docs/ci.md`). **Bloqueo externo:** no hay repositorio remoto ni `gh` en F0; la primera ejecución y la protección real se trasladan a **T-100**.
 - [x] **T-012** *Scaffold* Flutter con `melos`: `apps/barber_app`, `apps/client_pwa`, `packages/{fadespace_core, fadespace_api, fadespace_realtime, fadespace_ui}`; `very_good_analysis`; l10n `es-CO`. _(C-10, RNF-16)_
       → Melos 8.10.1 + *pub workspaces*; 6 paquetes; `flutter analyze` limpio y pruebas en verde (25 pruebas). l10n `es` + `es_CO` con `flutter gen-l10n`. Flutter 3.50 exige `material_ui`/`cupertino_ui` (ADR-010).
 - [x] **T-013** Redactar ADR-001, 002, 003, 006 y 007 (multi-tenant, autenticación, locking, proveedor OTP, estado/navegación Flutter). _(C-17)_
@@ -45,15 +45,22 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
 - [x] **T-014** Observabilidad base: `RequestContext` (`request_id`, `tenant_id`), logs JSON con enmascarado de teléfonos, endpoint de salud. _(C-14, RNF-12)_
       → `Infrastructure/Observability/` (`RequestContext`, `AssignRequestContext`, `ConfigureStructuredLogging`, `MaskSensitiveData`, `RequestContextProcessor`, `HealthChecker`) y `GET /api/v1/health`; cubierto por 6 pruebas.
 
-**Criterio de salida F0:** G1 y G2 aprobadas; *spikes* T-008 y T-009 resueltos con ADR; CI en verde.
+**Criterio de salida F0:** G1 y G2 aprobadas; *spikes* T-008 y T-009 resueltos con ADR; CI en verde (la primera
+ejecución remota se valida en T-100, porque F0 no dispuso de repositorio GitHub).
 
-> **Estado al 2026-11-14:** T-005, T-006, T-009, T-012, T-013 y T-014 completadas y verificadas localmente. T-008,
-> T-010 y T-011 quedan `[~]` con su pendiente explícito; T-007 (G1/G2) espera revisión humana. F0 **no** se cierra
-> hasta que T-007 esté aprobada y los pendientes de infraestructura/CI se validen en un entorno real.
+> **Estado al 2026-11-17:** **E-01 cerrada.** G1/G2 firmadas (T-007) y OQ-01…OQ-07 resueltas. T-005, T-006, T-009 y
+> T-012…T-014 completadas y verificadas localmente. T-008 queda `[~]` por la validación en dispositivo real y bajo
+> carga (T-206/T-207). T-010 y T-011 conservan `[~]` con bloqueo externo y su validación se traslada a **T-100**,
+> primera tarea de F1.
 
 ---
 
 ## F1 — MVP Core
+
+- [ ] **T-100** *(precondición de F1)* Validar la infraestructura de F0 en un entorno real: `docker compose config`,
+  `docker compose up -d --build` y `php artisan migrate --seed`; crear el repositorio remoto, ejecutar el pipeline y
+  aplicar la protección de rama con `scripts/apply-branch-protection.ps1`. Cierra T-010 y T-011. _(RNF-18, C-08, C-15)_
+      → Requiere Docker Desktop, repositorio GitHub y `gh auth`; ninguno estaba disponible al cerrar E-01.
 
 ### E-02 Multi-tenancy e identidad
 
@@ -104,14 +111,17 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
 - [ ] **T-153** KPIs del día: citas, ocupación por silla, cancelaciones y no-shows. _(RF-39)_
 - [ ] **T-154** Vista de auditoría filtrable (solo administrador). Dep. T-146. _(RF-38, US-21)_
 
-### E-06 PWA del cliente (reserva Zero-Login)
+### E-06 Página de reserva del cliente (Zero-Login, Blade/Alpine)
 
-- [ ] **T-160** *Scaffold* de `client_pwa`: tema, resolución del tenant por dominio, cliente de API con `Idempotency-Key` y manejo de errores de dominio. Dep. T-012, T-009. _(RF-10, C-10)_
-- [ ] **T-161** Flujo de reserva: servicio(s) → barbero / "Primer disponible" → fecha y franja → *hold* con cuenta regresiva visible. Dep. T-133, T-136. _(RF-08, RF-09, RF-12)_
+> Re-planificada el 2026-11-17 por ADR-005 (CC-02). `apps/client_pwa` queda como cáscara experimental y el embudo
+> público se sirve con Blade + Alpine.
+
+- [ ] **T-160** Vistas Blade/Alpine de la página de reserva: layout y tema (tokens CSS desde `fadespace_ui`), resolución del tenant por dominio, cliente de API con `Idempotency-Key` y manejo de errores de dominio. Dep. T-012, T-009. _(RF-10, C-10, RNF-06)_
+- [ ] **T-161** Flujo de reserva server-rendered: servicio(s) → barbero / "Primer disponible" → fecha y franja → *hold* con cuenta regresiva visible (Alpine). Dep. T-133, T-136. _(RF-08, RF-09, RF-12)_
 - [ ] **T-162** Pantalla de datos (nombre, teléfono, consentimiento), verificación OTP y confirmación de cita; manejo de `SLOT_TAKEN` y `HOLD_EXPIRED` conservando los datos. Dep. T-138, T-140. _(RF-10, RF-11)_
 - [ ] **T-163** "Mi cita": ver, cancelar y reprogramar; dispositivo recordado (omite OTP). Dep. T-143. _(RF-13, US-04)_
-- [ ] **T-164** Optimización de carga: *deferred components*, *assets* livianos y control del presupuesto (≤ 2 MB, TTI ≤ 6 s en 3G). _(RNF-06)_
-- [ ] **T-165** E2E con Playwright: reserva completa de cliente recurrente en ≤ 15 s. _(RNF-06, ESC-01)_
+- [ ] **T-164** Presupuesto de carga de la página de reserva: ≤ **250 KB** en la primera carga y **TTI ≤ 3 s** en 3G rápida (sustituye los 2 MB/6 s de Flutter Web), automatizado en CI con Lighthouse y verificado en WebPageTest con dispositivo real. _(RNF-06)_
+- [ ] **T-165** E2E con Playwright sobre la página Blade/Alpine: reserva completa de cliente recurrente en ≤ 15 s. _(RNF-06, ESC-01)_
 
 ### E-07 Release F1
 
@@ -168,7 +178,7 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
 - [ ] **T-245** **Pantalla de TV / Kiosco** (Blade + Alpine + Echo): en silla, siguiente, espera estimada; reconexión automática; solo nombre de pila e inicial. Dep. T-204, T-242. _(RF-25, ESC-14)_
 - [ ] **T-246** Diálogo "Agregar Walk-in" en la app del barbero. Dep. T-241. _(RF-23, US-12)_
 - [ ] **T-247** Registro de *walk-ins* desde el dashboard (recepción). Dep. T-241. _(RF-23)_
-- [ ] **T-248** PWA: estado de fila / "mi turno" con espera estimada en vivo. Dep. T-204, T-242. _(RF-26, US-14)_
+- [ ] **T-248** Página web (Blade/Alpine): estado de fila / "mi turno" con espera estimada en vivo. Dep. T-204, T-242. _(RF-26, US-14)_
 - [ ] **T-249** Sugerencia visual de `no_show` en la agenda del barbero y acción de confirmación. Dep. T-144. _(RF-16, RN-20)_
 
 ### E-12 Release F2
@@ -220,10 +230,10 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
 
 ### E-17 Privacidad, calidad y convergencia
 
-- [ ] **T-340** Historial de servicios del cliente en la PWA. _(RF-40, US-22)_
+- [ ] **T-340** Historial de servicios del cliente en la página web. _(RF-40, US-22)_
 - [ ] **T-341** Exportación y anonimización de datos del cliente a solicitud del titular. _(RF-41, RNF-11)_
 - [ ] **T-342** Revisión de seguridad (checklist OWASP ASVS nivel 2 básico) y prueba de penetración básica. _(RNF-10)_
-- [ ] **T-343** Pasada de accesibilidad y 360 px en apps y PWA (escala de texto 1,3×, contraste). _(RNF-08, RNF-09)_
+- [ ] **T-343** Pasada de accesibilidad y 360 px en apps y página web (escala de texto 1,3×, contraste). _(RNF-08, RNF-09)_
 - [ ] **T-344** Pruebas finales de carga y resiliencia (Redis caído, reconexión masiva de WebSockets). _(RNF-01, RNF-15)_
 - [ ] **T-345** README, *runbooks*, OpenAPI final y prueba de restauración de respaldo. _(RNF-17, RNF-19, C-17)_
 - [ ] **T-346** Convergencia **G4**: todos los escenarios Gherkin verificados, trazabilidad completa y cierre del backlog. _(C-02, C-16)_
@@ -242,3 +252,12 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
 - Servicios habilitados y duraciones por barbero.
 - Panel de plataforma (*super-admin*) de Bloxysoft.
 - Reportes avanzados y tablero de retención de clientes.
+
+---
+
+## Registro de cambios
+
+| Versión | Fecha | Cambio |
+|---|---|---|
+| 1.0 | 2026-11-14 | Versión inicial de la lista de tareas y trazabilidad. |
+| 1.1 | 2026-11-17 | Cierre de E-01: T-007 aprobada (G1/G2); T-160…T-165 re-planificadas a Blade/Alpine por ADR-005; alta de T-100 para validar Docker y CI remoto (traslado de T-010/T-011). |

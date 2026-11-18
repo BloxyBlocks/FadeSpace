@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — FadeSpace
 
-**Versión:** 1.1  
-**Estado:** F0 en curso (E-01: 10 de 14 tareas cerradas) · F1–F3 pendientes  
+**Versión:** 1.2  
+**Estado:** F0 cerrada en G2 (2026-11-17) · validación de infraestructura trasladada a T-100 · F1–F3 pendientes  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Regla:** ningún requisito se cierra en G4 sin módulo, tarea y prueba asociados (C-02).
 
@@ -24,15 +24,15 @@
 | C-05 | Cero overbooking | *Hold* (Lua) + `FOR UPDATE`; prueba de concurrencia | T-135, T-136, T-140, T-141 | Pendiente |
 | C-06 | Dinero exacto e inmutable | `Money` (`bcmath`), tabla de solo inserción, reversos; pruebas de propiedades | T-131, T-210, T-211, T-212, T-213 | Pendiente |
 | C-07 | Clean Architecture | Pruebas de arquitectura en CI | T-006 | Completado (F0) |
-| C-08 | Estándares de código | Pint (PSR-12), Larastan nivel 8, `flutter analyze` en CI | T-005, T-011, T-012 | En curso (F0; CI remoto pendiente) |
+| C-08 | Estándares de código | Pint (PSR-12), Larastan nivel 8, `flutter analyze` en CI | T-005, T-011, T-012, T-100 | En curso (F0; CI remoto se ejecuta en T-100) |
 | C-09 | Tiempo real < 200 ms | Métrica `emitted_at`, monitor sintético y carga WS | T-008, T-203, T-206, T-207 | En curso (F0: p95 18,8 ms en local; carga real pendiente) |
 | C-10 | Mobile-first y ergonomía | Tema de Modo Silla, *golden tests*, checklist 360 px | T-012, T-220, T-223, T-225, T-343 | Pendiente |
 | C-11 | Zero-Login seguro | OTP con *hash*, límites de tasa, token de alcance limitado | T-137, T-138 | Pendiente |
 | C-12 | Seguridad y privacidad | Autenticación, consentimiento, anonimización, revisión OWASP | T-108, T-139, T-312, T-341, T-342 | Pendiente |
-| C-13 | Rendimiento y recursos | Índices, caché Redis, `preventLazyLoading`, presupuesto PWA | T-105, T-130, T-133, T-164 | Pendiente |
+| C-13 | Rendimiento y recursos | Índices, caché Redis, `preventLazyLoading`, presupuesto de la página de reserva | T-105, T-130, T-133, T-164 | Pendiente |
 | C-14 | Observabilidad y auditoría | `RequestContext`, logs JSON, `audit_logs` | T-014, T-146, T-154 | Completado (F0, base; auditoría en F1) |
-| C-15 | Calidad verificable | CI obligatorio; DoD por tarea; suites críticas (aislamiento, concurrencia, dinero) | T-011, T-110, T-141 | En curso (F0; CI remoto pendiente) |
-| C-16 | Puertas de aprobación | Revisión humana en G1–G4 y *release gates* | T-007, T-172, T-251, T-346 | En curso |
+| C-15 | Calidad verificable | CI obligatorio; DoD por tarea; suites críticas (aislamiento, concurrencia, dinero) | T-011, T-100, T-110, T-141 | En curso (F0; CI remoto se ejecuta en T-100) |
+| C-16 | Puertas de aprobación | Revisión humana en G1-G4 y *release gates* | T-007, T-172, T-251, T-346 | En curso (G1/G2 aprobadas 2026-11-17; G3/G4 pendientes) |
 | C-17 | Simplicidad sostenible | ADR por dependencia; backlog separado | T-013, T-345 | Completado (F0; ADR-001…007 y 010) |
 | C-18 | Tiempo y zona horaria | `Clock`, UTC en almacenamiento, `scheduled_date` local | T-131, T-130 | Pendiente |
 
@@ -56,12 +56,12 @@
 
 | Req. | Módulo principal | Tarea | Prueba / verificación | Fase | Estado |
 |---|---|---|---|---|---|
-| RF-08 | `Domain/Scheduling/AvailabilityCalculator`, `Application/Booking/GetAvailability`, `mobile/apps/client_pwa/.../booking` | T-132, T-133, T-161 | `tests/Unit/Domain/Scheduling/AvailabilityCalculatorTest`, `tests/Feature/Booking/AvailabilityTest` | F1 | Pendiente |
+| RF-08 | `Domain/Scheduling/AvailabilityCalculator`, `Application/Booking/GetAvailability`, `resources/views/booking/` | T-132, T-133, T-161 | `tests/Unit/Domain/Scheduling/AvailabilityCalculatorTest`, `tests/Feature/Booking/AvailabilityTest` | F1 | Pendiente |
 | RF-09 | `Infrastructure/Cache/RedisSlotHoldStore`, `Application/Booking/CreateSlotHold` | T-135, T-136 | `tests/Integration/Booking/SlotHoldTest` | F1 | Pendiente |
-| RF-10 | `Infrastructure/Cache/RedisOtpStore`, `Infrastructure/Messaging/OtpChannel`, `Application/Identity/RequestOtp`/`VerifyOtp`, PWA `booking` | T-137, T-138, T-162 | `tests/Feature/Booking/OtpTest` | F1 | Pendiente |
+| RF-10 | `Infrastructure/Cache/RedisOtpStore`, `Infrastructure/Messaging/OtpChannel`, `Application/Identity/RequestOtp`/`VerifyOtp`, vistas `booking` | T-137, T-138, T-162 | `tests/Feature/Booking/OtpTest` | F1 | Pendiente |
 | RF-11 | `Application/Booking/ConfirmAppointment` | T-140, T-141 | `tests/Integration/Booking/ConfirmAppointmentTest`, `tests/Concurrency/ConcurrentBookingTest` | F1 | Pendiente |
 | RF-12 | `Domain/Scheduling/FirstAvailableSelector` | T-134 | `tests/Unit/Domain/Scheduling/FirstAvailableSelectorTest` | F1 | Pendiente |
-| RF-13 | `Application/Booking/CancelAppointment`/`RescheduleAppointment`, PWA `my_appointment` | T-143, T-163 | `tests/Feature/Booking/CustomerCancelTest` | F1 | Pendiente |
+| RF-13 | `Application/Booking/CancelAppointment`/`RescheduleAppointment`, vistas `my_appointment` | T-143, T-163 | `tests/Feature/Booking/CustomerCancelTest` | F1 | Pendiente |
 | RF-14 | `Application/Identity/CustomerResolver` | T-139 | `tests/Feature/Booking/CustomerResolverTest` | F1 | Pendiente |
 | RF-15 | `Domain/Scheduling/AppointmentStateMachine` | T-130, T-142 | `tests/Unit/Domain/Scheduling/AppointmentStateMachineTest` | F1 | Pendiente |
 | RF-16 | `Application/Booking/MarkNoShow`, `Application/Booking/CancelAppointment` (personal) | T-144, T-249 | `tests/Feature/Booking/StaffCancelNoShowTest` | F1 | Pendiente |
@@ -84,7 +84,7 @@
 | RF-23 | `Domain/Queue/WalkInPlacer`, `Application/Queue/AddWalkIn`, `barber_app/.../walk_in`, `Livewire/Admin/Agenda` | T-240, T-241, T-246, T-247 | `tests/Unit/Domain/Queue/WalkInPlacerTest`, `tests/Feature/Queue/AddWalkInTest` | F2 | Pendiente |
 | RF-24 | `Domain/Queue/WaitTimeEstimator`, `Application/Queue/RecalculateQueue` | T-240, T-242 | `tests/Unit/Domain/Queue/WaitTimeEstimatorTest`, `tests/Feature/Queue/RecalculateQueueTest` | F2 | Pendiente |
 | RF-25 | `Livewire/Tv/QueueBoard`, `display_devices` | T-243, T-244, T-245 | `tests/Feature/Display/DisplayTokenTest`, `tests/Realtime/TvBoardTest` | F2 | Pendiente |
-| RF-26 | `client_pwa/.../queue_status` | T-248 | `test/features/queue_status/queue_status_test.dart` | F2 | Pendiente |
+| RF-26 | `resources/views/queue/` | T-248 | `tests/Feature/Queue/QueueStatusTest` | F2 | Pendiente |
 
 ### Tiempo real
 
@@ -118,7 +118,7 @@
 |---|---|---|---|---|---|
 | RF-38 | `audit_logs`, `Listeners/WriteAuditLog`, `Livewire/Admin/Audit` | T-146, T-154 | `tests/Feature/Audit/AuditTrailTest` | F1 | Pendiente |
 | RF-39 | `Livewire/Admin/Agenda`, `Livewire/Admin/Dashboard` | T-150, T-152, T-153 | `tests/Feature/Admin/DashboardTest` | F1 | Pendiente |
-| RF-40 | `client_pwa/.../history` | T-340 | `tests/Feature/Booking/HistoryTest` | F3 | Pendiente |
+| RF-40 | `resources/views/history/` | T-340 | `tests/Feature/Booking/HistoryTest` | F3 | Pendiente |
 | RF-41 | `Application/Privacy/ExportCustomerData`/`AnonymizeCustomer` | T-341 | `tests/Feature/Privacy/AnonymizeCustomerTest` | F3 | Pendiente |
 
 ---
@@ -132,7 +132,7 @@
 | RNF-03 | `RedisSlotHoldStore` + `FOR UPDATE` | T-141 | `tests/Concurrency/ConcurrentBookingTest` | Pendiente |
 | RNF-04 | `TenantScope`, canales autorizados | T-110 | `tests/Integration/Tenancy/TenantIsolationTest` | Pendiente |
 | RNF-05 | Despliegue, monitoreo, alertas | T-170 | Monitor de disponibilidad en *staging*/producción | Pendiente |
-| RNF-06 | Página de reserva liviana (ADR-005); `client_pwa` solo experimental | T-009, T-164, T-165 | `spikes/t009/` (2,32 MB medidos; presupuesto 2 MB) + Lighthouse/WebPageTest en 3G + Playwright E2E | En curso (F0: ADR-005 ratificado; TTI real en T-164) |
+| RNF-06 | Página de reserva Blade/Alpine con ≤ 250 KB en primera carga y TTI ≤ 3 s en 3G rápida (ADR-005); `client_pwa` solo experimental | T-009, T-164, T-165 | `spikes/t009/` (2,32 MB descartan Flutter Web) + Lighthouse CI/WebPageTest sobre la página Blade + Playwright E2E | En curso (F1; presupuesto verificado en T-164) |
 | RNF-07 | `barber_app/.../chair_mode`, `fadespace_ui` | T-220, T-223, T-225 | *Golden tests* + prueba manual con cronómetro | Pendiente |
 | RNF-08 | Layouts responsive, apps Android 8+/iOS 15+ | T-012, T-150, T-229, T-343 | Checklist 360 px y dispositivos reales | Pendiente |
 | RNF-09 | `fadespace_ui`, vistas Blade/Livewire | T-343 | Checklist WCAG 2.1 AA + pruebas de semántica | Pendiente |
@@ -144,7 +144,7 @@
 | RNF-15 | Degradación segura sin Redis; sondeo | T-208, T-228, T-344 | `tests/Integration/Resilience/RedisDownTest` (ESC-25) | Pendiente |
 | RNF-16 | l10n `es-CO`, `COP`, `America/Bogota` | T-012, T-106 | ARB `es`/`es_CO` + `flutter gen-l10n`; `TenantSettings` en F1 | En curso (F0; tenant settings en F1) |
 | RNF-17 | Respaldos MySQL y restauración | T-170, T-345 | Simulacro de restauración documentado | Pendiente |
-| RNF-18 | Aplicación *stateless*, Reverb con Redis | T-010, T-201 | `compose.yaml` (6 servicios, *healthchecks*) + prueba con 2 nodos | En curso (F0; compose sin ejecutar) |
+| RNF-18 | Aplicación *stateless*, Reverb con Redis | T-010, T-100, T-201 | `compose.yaml` (6 servicios, *healthchecks*) + prueba con 2 nodos | En curso (T-100 valida compose; escalado en T-201) |
 | RNF-19 | `X-Client-Version`, `/api/v1`, OpenAPI | T-221, T-345 | `tests/Feature/Api/ClientVersionTest` + contrato OpenAPI | Pendiente |
 | RNF-20 | Migraciones expandir → contraer | T-011, T-345 | Workflow de CI definido; revisión en CI y *runbook* de despliegue | En curso (F0; migraciones en F1) |
 
@@ -275,21 +275,22 @@
 | F3 — Automatización y monetización | RF-32…RF-37, RF-40, RF-41 (8) | ESC-11, 17, 19, 20 (4) | E-13…E-17 | G3 (F3), G4 |
 | **Total** | **41** | **26** | | |
 
-### 7.1 Estado de E-01 (F0) al 2026-11-14
+### 7.1 Estado de E-01 (F0) al 2026-11-17
 
 | Tarea | Estado | Evidencia principal | Pendiente |
 |---|---|---|---|
 | T-001…T-004 | `[x]` | `00-constitucion.md`, `01-spec.md`, `02-plan.md`, `03-tasks.md`, este documento | — |
 | T-005 | `[x]` | `backend/`, `composer quality` en verde (Pint, Larastan 8, audit, 14 pruebas) | — |
 | T-006 | `[x]` | `backend/tests/Architecture/LayersTest.php` | — |
-| T-007 | `[ ]` | — | Revisión humana G1/G2 y OQ-01…OQ-07 |
+| T-007 | `[x]` | Acta G1/G2 del 2026-11-17 (`01-spec.md` §12/§14, `02-plan.md` §14) | — |
 | T-008 | `[~]` | `spikes/t008/latency-40.json`, ADR-004 | Dispositivo real y carga (T-206/T-207) |
-| T-009 | `[x]` | `spikes/t009/*`, ADR-005 ratificado | Medición de TTI real en T-164 (F1) |
-| T-010 | `[~]` | `compose.yaml`, `infra/docker/*` | `docker compose config/up` (Docker no instalado) |
-| T-011 | `[~]` | `.github/workflows/ci.yml`, `infra/github/branch-protection.json`, `docs/ci.md` | Ejecución remota y protección aplicada |
+| T-009 | `[x]` | `spikes/t009/*`, ADR-005 aplicado | Presupuesto de la página Blade en T-164 (F1) |
+| T-010 | `[~]` | `compose.yaml`, `infra/docker/*` | **Bloqueo externo → T-100** |
+| T-011 | `[~]` | `.github/workflows/ci.yml`, `infra/github/branch-protection.json`, `docs/ci.md` | **Bloqueo externo → T-100** |
 | T-012 | `[x]` | `mobile/` (6 paquetes), `flutter analyze` limpio, 25 pruebas | — |
 | T-013 | `[x]` | `docs/adr/ADR-001…007`, `ADR-010` | — |
 | T-014 | `[x]` | `app/Infrastructure/Observability/`, `/api/v1/health` | — |
+| T-100 | `[ ]` | — | Docker Compose, pipeline remoto y protección de rama (precondición de F1) |
 
 ---
 
@@ -299,3 +300,4 @@
 |---|---|---|---|
 | 1.0 | 2026-11-14 | Versión inicial de la documentación SEDD de FadeSpace | Diego Alejandro Zamora Gallego |
 | 1.1 | 2026-11-14 | Avance de E-01: T-005, T-006, T-012, T-013 y T-014 completadas; T-008…T-011 en curso con evidencia en `spikes/`; ADR-001…007 y 010 registrados | Diego Alejandro Zamora Gallego |
+| 1.2 | 2026-11-17 | Cierre de E-01: T-007 aprobada (G1/G2); T-009 con ADR-005 aplicado; T-160…T-165 re-planificadas a Blade/Alpine; alta de T-100 (traslado de T-010/T-011); RNF-06 pasa a ≤ 250 KB/TTI ≤ 3 s | Diego Alejandro Zamora Gallego |

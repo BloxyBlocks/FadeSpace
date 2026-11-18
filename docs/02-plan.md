@@ -1,7 +1,7 @@
 # Plan de arquitectura e implementación — FadeSpace
 
-**Versión:** 1.0  
-**Estado:** Borrador · pendiente de aprobación (G2)  
+**Versión:** 1.1  
+**Estado:** Aprobado en G2 el 2026-11-17 · enmienda de ADR-005 aplicada  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Depende de:** `01-spec.md`
 
@@ -9,12 +9,12 @@
 
 ## 1. Arquitectura general
 
-Backend monolítico modular (Laravel) que expone una API REST y un servidor WebSocket (Reverb), con tres clientes: dashboard web, app del barbero y PWA del cliente.
+Backend monolítico modular (Laravel) que expone una API REST y un servidor WebSocket (Reverb), con tres clientes: dashboard web, app del barbero y página de reserva del cliente (Blade/Alpine; ADR-005).
 
 ```
 ┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐  ┌──────────────┐
-│ Dashboard Admin    │  │ App Barbero        │  │ PWA Cliente        │  │ Pantalla TV  │
-│ Livewire + Alpine  │  │ Flutter (iOS/And.) │  │ Flutter Web        │  │ Blade+Alpine │
+│ Dashboard Admin    │  │ App Barbero        │  │ Reserva Web        │  │ Pantalla TV  │
+│ Livewire + Alpine  │  │ Flutter (iOS/And.) │  │ Blade + Alpine     │  │ Blade+Alpine │
 └─────────┬──────────┘  └─────────┬──────────┘  └─────────┬──────────┘  └──────┬───────┘
           │ HTTPS / WSS           │ REST + WS             │ REST + WS          │ WS (token)
           ▼                       ▼                       ▼                    ▼
@@ -177,7 +177,7 @@ mobile/
 │  │        ├─ walk_in/     agregar walk-in
 │  │        ├─ earnings/    métricas y liquidación del barbero
 │  │        └─ settings/
-│  └─ client_pwa/                 # Flutter Web
+│  └─ client_pwa/                 # Flutter Web (experimental, fuera de la ruta crítica)
 │     └─ lib/
 │        └─ features/
 │           ├─ booking/     servicio → barbero → franja → datos → OTP → confirmación
@@ -195,6 +195,10 @@ mobile/
 - Estado: **Riverpod**; navegación: **go_router**; HTTP: **dio**; modelos: **freezed**.
 - Cliente WebSocket: librería compatible con el protocolo Pusher (decisión final en ADR-004 tras el *spike* T-008).
 - Cada `feature` sigue `presentation → domain ← data`.
+- **Embudo público (ADR-005):** la reserva Zero-Login se sirve con **Blade + Alpine** desde
+  `backend/resources/views/booking/` y CSS propio. `client_pwa` se conserva como cáscara de experimentación y queda
+  fuera de la ruta crítica y del CI obligatorio. Los *design tokens* se comparten como variables CSS generadas desde
+  la paleta de `fadespace_ui` (T-343).
 
 ---
 
@@ -246,7 +250,7 @@ tenants 1───* users 1───* appointments *───1 customers
 | `t:{tid}:catalog` | Invalidación explícita | Servicios y precios activos |
 | `t:{tid}:settings` | Invalidación explícita | Configuración, horarios, reglas de comisión |
 | `t:{tid}:barber:{id}:schedule` | Invalidación explícita | Horario semanal del barbero |
-| `t:{tid}:queue:{date}` | Corto / invalidación | *Snapshot* de la fila para TV y PWA |
+| `t:{tid}:queue:{date}` | Corto / invalidación | *Snapshot* de la fila para TV y página web |
 | `idem:{tid}:{key}` | 24 h | Respuesta de operaciones idempotentes |
 | `tenant:domain:{domain}` | 10 min | Resolución de dominio → tenant |
 
@@ -279,6 +283,8 @@ POST   /public/appointments/{id}/reschedule   { hold_id }
 GET    /public/queue                          → estado de fila (token de cliente)
 GET    /public/history
 ```
+
+> Estas rutas alimentan la página de reserva Blade/Alpine (ADR-005); `client_pwa` no está en la ruta crítica de F1.
 
 ### Personal (admin / barbero) — Sanctum
 
@@ -354,7 +360,7 @@ Autorización en `routes/channels.php`: `tenant.{tenantId}.admin`, `tenant.{tena
 | Tiempo real | Pest + cliente WS | Entrega y latencia p95 < 200 ms |
 | Carga | k6 / Artillery | 1.000 conexiones WS; disponibilidad y confirmación |
 | Flutter | `flutter test`, *golden*, `integration_test` | Modo Silla, reserva, resincronización |
-| E2E | Playwright (PWA) | Reserva completa ≤ 15 s (cliente recurrente) |
+| E2E | Playwright (página Blade/Alpine) | Reserva completa ≤ 15 s (cliente recurrente) |
 | Manual | Checklist | 360 px, accesibilidad, 3G real, dispositivos reales |
 
 Cobertura objetivo: ≥ 80 % en `app/Domain` y `app/Application`; ≥ 70 % en `domain`/`data` de Flutter.
@@ -378,7 +384,7 @@ Cobertura objetivo: ≥ 80 % en `app/Domain` y `app/Application`; ≥ 70 % en `d
 | ADR-002 | Autenticación (Sanctum, tokens de cliente y TV) | F0 |
 | ADR-003 | Locking de reservas (mutex por silla + revalidación) | F0 |
 | ADR-004 | Cliente WebSocket en Flutter para Reverb (mobile y web) | F0 (*spike* T-008) |
-| ADR-005 | Flutter Web vs. página liviana para la PWA de reserva | F0 (*spike* T-009) |
+| ADR-005 | Página liviana Blade/Alpine para el embudo público; Flutter Web fuera de la ruta crítica | F0 (*spike* T-009) — aceptado 2026-11-14, aplicado 2026-11-17 |
 | ADR-006 | Proveedor de SMS/WhatsApp para OTP en F1 | F0 |
 | ADR-007 | Estado y navegación en Flutter (Riverpod, go_router) | F0 |
 | ADR-008 | Pasarela de pagos para suscripciones | Antes de F3 |
@@ -390,16 +396,16 @@ Cobertura objetivo: ≥ 80 % en `app/Domain` y `app/Application`; ≥ 70 % en `d
 
 | Fase | Contenido | Criterio de salida (release gate) | Duración orientativa |
 |---|---|---|---|
-| **F0 — Cimientos** | Repositorio, Docker, CI, arquitectura base, pruebas de arquitectura, *spikes* de WebSocket y de peso de Flutter Web, ADR iniciales | G1 y G2 aprobadas; *spikes* resueltos; CI verde | 1–2 semanas |
-| **F1 — MVP Core** (Meses 1–2) | Multi-tenant con aislamiento, auth del personal, catálogo, horarios, dashboard admin, reserva Zero-Login (PWA), *hold* + *locking*, auditoría base | Un tenant de prueba reserva de punta a punta sin overbooking; ESC-01…07, 18, 22, 23, 24 verificados; suite de aislamiento en verde | ~8 semanas |
+| **F0 — Cimientos** | Repositorio, Docker, CI, arquitectura base, pruebas de arquitectura, *spikes* de WebSocket y de peso de Flutter Web, ADR iniciales | G1 y G2 aprobadas; *spikes* resueltos; CI verde (primera ejecución remota en T-100) | 1–2 semanas |
+| **F1 — MVP Core** (Meses 1–2) | Multi-tenant con aislamiento, auth del personal, catálogo, horarios, dashboard admin, reserva Zero-Login (página Blade/Alpine), *hold* + *locking*, auditoría base | Un tenant de prueba reserva de punta a punta sin overbooking; ESC-01…07, 18, 22, 23, 24 verificados; suite de aislamiento en verde | ~8 semanas |
 | **F2 — Tiempo real y movilidad** (Meses 3–4) | Reverb, app del barbero (Modo Silla, cobro, bloqueo rápido), motor de comisiones y transacciones, *walk-ins*, fila virtual y Pantalla de TV | Silla → cobro → TV en vivo con p95 < 200 ms; ESC-08…10, 12…16, 21, 25, 26 verificados; app en distribución interna | ~8 semanas |
 | **F3 — Automatización y monetización** (Meses 5–6) | Rescate de huecos, WhatsApp Business, cierre de caja y liquidación avanzada, reportes, suscripciones y *onboarding* autoservicio | ESC-11, 17, 19, 20 verificados; cobro de suscripciones operando; G4 convergencia | ~8 semanas |
 
 ### Alcance por fase
 
-**F1 — MVP Core:** RF-01…17, RF-38, RF-39. Entregables: `tenants/users/customers/services/appointments/appointment_services/barber_schedules/time_blocks/audit_logs`, `ResolveTenant`, `TenantScope`, disponibilidad, *hold*, OTP (canal SMS), confirmación con *lock*, cancelación/reprogramación, dashboard con agenda, PWA de reserva.
+**F1 — MVP Core:** RF-01…17, RF-38, RF-39. Entregables: `tenants/users/customers/services/appointments/appointment_services/barber_schedules/time_blocks/audit_logs`, `ResolveTenant`, `TenantScope`, disponibilidad, *hold*, OTP (canal SMS), confirmación con *lock*, cancelación/reprogramación, dashboard con agenda, página de reserva Blade/Alpine.
 
-**F2 — Tiempo real y movilidad:** RF-18…31. Entregables: Reverb y canales, app del barbero, `transactions`, `CommissionEngine`, `display_devices`, `WalkInPlacer`, `WaitTimeEstimator`, Pantalla de TV, PWA de fila, caja diaria básica.
+**F2 — Tiempo real y movilidad:** RF-18…31. Entregables: Reverb y canales, app del barbero, `transactions`, `CommissionEngine`, `display_devices`, `WalkInPlacer`, `WaitTimeEstimator`, Pantalla de TV, página de fila Blade/Alpine, caja diaria básica.
 
 **F3 — Automatización y monetización:** RF-32…37, RF-40, RF-41. Entregables: `cash_closings`, liquidación por barbero (incluido alquiler), `gap_offers`, WhatsApp, `subscriptions`, `tenant_addons`, *feature gating*, *onboarding*, historial y privacidad de clientes.
 
@@ -411,7 +417,7 @@ Cobertura objetivo: ≥ 80 % en `app/Domain` y `app/Application`; ≥ 70 % en `d
 |---|---|---|---|
 | Fuga de datos entre tenants por una consulta sin *scope* | Media | Crítico | `TenantScope` global, prueba de fuga en CI, revisión de `withoutGlobalScopes`, pruebas de canales |
 | Overbooking por condición de carrera | Media | Alto | *Hold* atómico (Lua) + mutex MySQL + prueba de concurrencia (T-141) |
-| Peso de Flutter Web inviable en 3G | Alta | Alto | *Spike* T-009; presupuesto de carga; alternativa liviana (ADR-005) |
+| Peso del cliente web inviable en 3G | Baja | Medio | **Resuelto con ADR-005:** página Blade/Alpine con presupuesto ≤ 250 KB y TTI ≤ 3 s, verificado en T-164 |
 | Latencia WS > 200 ms bajo carga | Media | Alto | *Spike* T-008, métrica `emitted_at`, escalado Reverb con Redis, pruebas de carga |
 | Cliente Flutter para Reverb inmaduro en web/móvil | Media | Medio | *Spike* y ADR-004; capa de abstracción `fadespace_realtime` |
 | OTP/WhatsApp: costos, bloqueos o aprobación de plantillas | Alta | Medio | Interfaz `OtpChannel`, *fallback* SMS, iniciar aprobación de plantillas en F2 |
@@ -428,3 +434,12 @@ Cobertura objetivo: ≥ 80 % en `app/Domain` y `app/Application`; ≥ 70 % en `d
 ## 13. Trazabilidad
 
 La matriz completa vive en `04-traceability.md`. Cada requisito debe tener módulo, tarea y prueba asociados antes de cerrar G4.
+
+---
+
+## 14. Registro de cambios
+
+| ID | Fecha | Cambio | Puerta |
+|---|---|---|---|
+| CC-01 | 2026-11-17 | Aprobación del plan en G2 (arquitectura, fases, riesgos y ADR iniciales). | G2 |
+| CC-02 | 2026-11-17 | Enmienda de ADR-005: el embudo público pasa a Blade/Alpine (§1, §4, §7, §9, §10, §11 y §12); se re-planifican T-160…T-165 y se crea T-100 para validar Docker y CI. | G2 |

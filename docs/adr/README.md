@@ -22,8 +22,8 @@
 | [ADR-002](ADR-002-authentication.md) | Autenticación con Sanctum: tokens de personal, token de cliente con *ability* limitada y *display token* de TV | F0 | Aceptado |
 | [ADR-003](ADR-003-booking-locking.md) | *Hold* atómico en Redis + mutex MySQL por barbero con revalidación de traslapes | F0 | Aceptado |
 | [ADR-004](ADR-004-realtime-client.md) | Cliente WebSocket propio sobre `web_socket_channel` (protocolo Pusher) en `fadespace_realtime` | F0 (*spike* T-008) | Aceptado |
-| [ADR-005](ADR-005-client-booking-frontend.md) | Página de reserva liviana server-rendered como entrada; Flutter Web no cubre el embudo público | F0 (*spike* T-009) | Aceptado (ratificado 2026-11-14) |
-| [ADR-006](ADR-006-otp-provider.md) | OTP por SMS con Twilio en F1 detrás de `OtpChannel`; WhatsApp Cloud API en F3 | F0 | Propuesto (OQ-03) |
+| [ADR-005](ADR-005-client-booking-frontend.md) | Página de reserva liviana server-rendered como entrada; Flutter Web no cubre el embudo público | F0 (*spike* T-009) | Aceptado (ratificado 2026-11-14; aplicado 2026-11-17) |
+| [ADR-006](ADR-006-otp-provider.md) | OTP por SMS con Twilio en F1 detrás de `OtpChannel`; WhatsApp Cloud API en F3 | F0 | Aceptado en G2 (2026-11-17) |
 | [ADR-007](ADR-007-flutter-state-navigation.md) | Riverpod 3 + `go_router` 18 con `StatefulShellRoute` | F0 | Aceptado |
 | [ADR-010](ADR-010-toolchain-baseline.md) | Línea base de toolchain: PHP 8.4, Laravel 13, Pest 5, Larastan 3, Flutter 3.50, Melos 8 | F0 | Aceptado |
 
@@ -36,7 +36,7 @@
 
 ## Pendientes conocidos
 
-- **ADR-005 ratificado el 2026-11-14.** Falta reflejarlo en `02-plan.md` §5/§7 y re-planificar T-160…T-165, lo que
-  ocurre al cerrar G2 (T-007) por control de cambios.
-- **ADR-006** depende de OQ-03 (proveedor de OTP) y de validación de costos con negocio.
+- **ADR-005 aplicado el 2026-11-17** al cerrar G2: `02-plan.md` §1/§4/§7/§9/§10/§11/§12 enmendado y T-160…T-165
+  re-planificadas a Blade/Alpine + Playwright (CC-02).
+- **ADR-006 aceptado en G2 (2026-11-17)** con OQ-03 resuelta; los costos de SMS se validan antes de T-137.
 - ADR-008 (pasarela de pagos) y ADR-009 (despliegue y hosting) siguen fuera de F0 según `02-plan.md` §10.

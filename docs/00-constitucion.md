@@ -1,7 +1,7 @@
 # Constitución del proyecto — FadeSpace
 
 **Versión:** 1.0  
-**Estado:** Borrador · pendiente de aprobación (G1)  
+**Estado:** Aprobada en G1/G2 el 2026-11-17  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Iniciativa:** Bloxysoft  
 **Versión de la app:** 1.0  
@@ -141,7 +141,7 @@ Reglas asociadas:
 6. **Modo Silla:** acción primaria en la zona del pulgar, un solo toque para "Cliente en Silla", máximo dos para "Finalizar y Cobrar", con retroalimentación háptica y estado de carga visible.
 7. **Conectividad:** estados explícitos (en línea, reconectando, sin conexión); reintentos con `Idempotency-Key`; resincronización con *snapshot* tras reconectar el WebSocket.
 8. **Almacenamiento seguro:** tokens en almacenamiento seguro del dispositivo; nunca en preferencias en claro.
-9. **Rendimiento web (PWA cliente):** carga diferida (`deferred components`), *tree-shaking* y presupuesto de peso definido en RNF-06.
+9. **Rendimiento web (página de reserva):** HTML crítico en línea, CSS/JS mínimos, caché inmutable de *assets* con *hash* y presupuesto definido en RNF-06 (≤ 250 KB y TTI ≤ 3 s). `deferred components` solo aplica a la cáscara experimental de Flutter Web.
 10. **Internacionalización:** ARB con `es-CO` por defecto; ningún texto de UI incrustado en el código.
 
 ---
@@ -172,7 +172,7 @@ Reglas asociadas:
 | Contrato/API | Pest + OpenAPI | Estabilidad de `/api/v1` |
 | Tiempo real | Pruebas de integración + carga (k6/Artillery) | Entrega de eventos y p95 < 200 ms |
 | Flutter | `flutter test` + *golden tests* | Dominio, repositorios, widgets críticos de Modo Silla |
-| E2E | Playwright (PWA) / `integration_test` (app) | Reserva, silla → cobro, fila → TV |
+| E2E | Playwright (página de reserva Blade/Alpine) / `integration_test` (app) | Reserva, silla → cobro, fila → TV |
 | Manual | Checklist | Accesibilidad, 360 px, dispositivos reales, 3G |
 
 **Cobertura mínima:** ≥ 80 % en `Domain` y `Application` (PHP); ≥ 70 % en `domain` y `data` (Flutter).
@@ -200,8 +200,8 @@ Una tarea se considera terminada cuando:
 
 | Puerta | Qué se revisa | Estado |
 |---|---|---|
-| **G1 — Especificación** | Alcance, RF, RN, RNF, criterios de aceptación y preguntas abiertas | Pendiente |
-| **G2 — Plan** | Arquitectura, modelo de datos, fases, riesgos y ADR iniciales | Pendiente |
+| **G1 — Especificación** | Alcance, RF, RN, RNF, criterios de aceptación y preguntas abiertas | Aprobada 2026-11-17 |
+| **G2 — Plan** | Arquitectura, modelo de datos, fases, riesgos y ADR iniciales | Aprobada 2026-11-17 |
 | **G3 — Implementación** | Cada fase (F1, F2, F3) contra su criterio de salida y *release gate* | Pendiente |
 | **G4 — Convergencia** | Todos los escenarios Gherkin verificados y trazabilidad completa | Pendiente |
 

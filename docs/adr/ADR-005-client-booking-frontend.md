@@ -1,9 +1,9 @@
 # ADR-005 — Entrada del cliente: página de reserva liviana en lugar de Flutter Web
 
-- **Estado:** Aceptado — ratificado el 2026-11-14 (decisión sobre OQ-06)
+- **Estado:** Aceptado — ratificado el 2026-11-14; enmiendas aplicadas al cerrar G2 (2026-11-17)
 - **Fecha:** 2026-11-14
 - **Ratificación:** Diego Alejandro Zamora Gallego (decisión de producto, 2026-11-14). La re-planificación de
-  T-160…T-165 y la enmienda de `02-plan.md` §5 se aplican al cerrar G2 (T-007).
+  T-160…T-165 y la enmienda de `02-plan.md` §1/§4/§7/§9/§10/§11/§12 se aplicaron el 2026-11-17 al cerrar G2 (T-007).
 - **Requisitos:** RNF-06, RNF-08, C-13, C-17, OQ-06
 - **Tareas:** T-009 (*spike*), T-160…T-165 (re-planificar), T-343
 
@@ -82,9 +82,9 @@ iconos ni los `NOTICES`, y a cambio de:
    el coste de los 2 MB; cualquier promoción requiere un ADR que reemplace a este.
 3. **La app Flutter del barbero no se ve afectada**: sigue siendo la app nativa (Android/iOS), donde el peso de
    descarga no compite con el presupuesto de 3G de una página web.
-4. **Re-planificación obligatoria en G2** (control de cambios, constitución §14): T-160…T-165 cambian de "scaffold
-   Flutter" a "vistas Blade/Alpine + Playwright E2E". `02-plan.md` §5/§7 y `04-traceability.md` deben actualizarse
-   en la misma puerta.
+4. **Re-planificación aplicada en G2** (control de cambios, constitución §14): T-160…T-165 pasan de "scaffold
+   Flutter" a "vistas Blade/Alpine + Playwright E2E". `02-plan.md` §1/§4/§7/§9/§10/§11/§12 y `04-traceability.md`
+   quedaron actualizados el 2026-11-17 en la misma puerta.
 5. **Requisitos que la página liviana debe cumplir igualmente**: módulo ES, sin *blocking CSS*, `Cache-Control`
    inmutable para *assets* con hash, HTML crítico en línea ≤ 14 KB, OTP y *hold* con Cuenta Regresiva, accesibilidad
    WCAG 2.1 AA (RNF-09) y `es-CO` (RNF-16).
@@ -114,9 +114,9 @@ iconos ni los `NOTICES`, y a cambio de:
   variables generadas desde la misma paleta de `fadespace_ui` (documentar en T-343).
 - `apps/client_pwa` queda como código no desplegado → se conserva etiquetado como experimento y se excluye de CI
   obligatorio si empieza a costar mantenimiento.
-- La decisión contradice `02-plan.md` §5 → **queda ratificada el 2026-11-14**, pero la enmienda formal de
-  `02-plan.md` §5/§7 y de `04-traceability.md` (T-160…T-165) se ejecuta al cerrar G2 (T-007), porque es un cambio
-  de alcance sujeto a control de cambios (constitución §14).
+- La decisión contradice `02-plan.md` §1 → **quedó ratificada el 2026-11-14** y la enmienda formal de
+  `02-plan.md` §1/§4/§7/§9/§10/§11/§12 y de `04-traceability.md` (T-160…T-165) **se ejecutó el 2026-11-17** al
+  cerrar G2 (T-007), con registro CC-02 (constitución §14).
 
 ## Verificación
 
@@ -137,5 +137,12 @@ iconos ni los `NOTICES`, y a cambio de:
 ## Referencias
 
 - `docs/01-spec.md` RNF-06, RNF-08, RNF-09, OQ-06.
-- `docs/02-plan.md` §5 (clientes), §7 rutas, §10 ADR-005, §11 riesgos.
+- `docs/02-plan.md` §1 (clientes), §4 (estructura Flutter), §7 rutas, §9 pruebas E2E, §10 ADR-005, §11 fases y §12 riesgos.
 - `docs/00-constitucion.md` C-13, C-17, §14 control de cambios.
+
+## Historial
+
+| Fecha | Cambio |
+|---|---|
+| 2026-11-14 | ADR aceptado y ratificado por el autor (OQ-06 resuelta). |
+| 2026-11-17 | G2 aprobada: enmiendas de `02-plan.md` y `04-traceability.md` aplicadas; T-160…T-165 re-planificadas. |

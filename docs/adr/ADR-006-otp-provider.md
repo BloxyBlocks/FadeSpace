@@ -1,6 +1,6 @@
 # ADR-006 — Proveedor de OTP: SMS transaccional en F1, WhatsApp Cloud API en F3
 
-- **Estado:** Propuesto (depende de OQ-03 y de validación de costos con negocio)
+- **Estado:** Aceptado en G2 (2026-11-17); OQ-03 resuelta. Los costos se validan antes de T-137.
 - **Fecha:** 2026-11-14
 - **Requisitos:** RF-10, RN-22, RN-23, C-11, C-12
 - **Tareas:** T-137, T-138, T-230…T-232 (F3 WhatsApp), T-345 (*runbook*)

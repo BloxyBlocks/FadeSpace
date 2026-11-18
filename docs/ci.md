@@ -1,6 +1,6 @@
 # Integración continua y protección de ramas
 
-**Estado:** pipeline definido y ejecutable localmente; **validación remota pendiente** (no existe repositorio
+**Estado:** pipeline definido y ejecutable localmente; **validación remota trasladada a T-100** (no existe repositorio
 GitHub todavía). Ver `docs/status/E-01-report.md`.
 
 ## 1. Pipeline
@@ -77,7 +77,7 @@ un check que nunca aparecerá.
 - [x] Workflow escrito con Pint, Larastan, Pest, `composer audit`, `flutter analyze` y `flutter test`.
 - [x] Política de protección de ramas versionada (JSON + script).
 - [x] Documentación de los checks y de su mantenimiento.
-- [ ] **Pendiente:** ejecutar el pipeline en GitHub y aplicar la protección real (requiere repositorio remoto y
+- [ ] **Pendiente de T-100:** ejecutar el pipeline en GitHub y aplicar la protección real (requiere repositorio remoto y
       permisos de administrador; no disponible en el entorno de F0).
 
 ## 5. Riesgos y mantenimiento

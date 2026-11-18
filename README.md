@@ -1,10 +1,10 @@
 # FadeSpace
 
-Monorepo de FadeSpace: API y dashboard (Laravel), app del barbero y PWA del cliente (Flutter), más la
-documentación de especificación, plan, tareas y decisiones de arquitectura.
+Monorepo de FadeSpace: API y dashboard (Laravel), app del barbero (Flutter) y página de reserva del cliente
+(Blade/Alpine), más la documentación de especificación, plan, tareas y decisiones de arquitectura.
 
-> **Estado:** F0 — cimientos. La puerta **G1/G2** (revisión humana de constitución, spec y plan) está pendiente; ver
-> [`docs/03-tasks.md`](docs/03-tasks.md) (T-007).
+> **Estado:** F0 cerrada en G2 (2026-11-17). La validación de Docker y del CI remoto quedó trasladada a **T-100**
+> (precondición de F1); ver [`docs/status/E-01-report.md`](docs/status/E-01-report.md).
 
 ## Estructura
 

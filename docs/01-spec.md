@@ -1,7 +1,7 @@
 # Especificación funcional y técnica — FadeSpace
 
-**Versión:** 1.0  
-**Estado:** Borrador · pendiente de aprobación (G1)  
+**Versión:** 1.1  
+**Estado:** Aprobada en G1 y actualizada en G2 el 2026-11-17 · OQ-01…OQ-07 resueltas en §12  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Iniciativa:** Bloxysoft  
 **Producto:** Plataforma SaaS multi-tenant de gestión, agendamiento y cobros para barberías  
@@ -38,7 +38,7 @@ Las barberías locales operan con agendas de papel, cuadernos y conversaciones d
 
 - Plataforma multi-tenant con aislamiento de datos y planes de suscripción.
 - Dashboard administrativo web (Livewire/Alpine): barberos, servicios, horarios, agenda, caja y comisiones.
-- Reserva **Zero-Login** (PWA Flutter Web) con verificación OTP.
+- Reserva **Zero-Login** (página Blade/Alpine; ADR-005) con verificación OTP.
 - Control de concurrencia: *Cache Hold* (Redis) + *Pessimistic Locking* (MySQL).
 - App del barbero (Flutter): agenda, **Modo Silla**, cobro rápido, bloqueo rápido y métricas diarias.
 - **Fila Virtual** y gestión de *walk-ins*, con **Pantalla de TV / Kiosco**.
@@ -56,7 +56,7 @@ Las barberías locales operan con agendas de papel, cuadernos y conversaciones d
 - Módulo de inventario y comisiones por venta de productos (add-on posterior).
 - Propinas, descuentos, cupones y pagos en línea de la cita por parte del cliente.
 - Facturación electrónica / contabilidad.
-- Aplicación nativa para el cliente final (se atiende vía PWA).
+- Aplicación nativa para el cliente final (se atiende vía página de reserva web).
 - Panel interno de plataforma (*super-admin*) de Bloxysoft; en F1–F2 los tenants se aprovisionan por comando de consola.
 - Notificaciones *push* nativas (FCM/APNs) para el barbero.
 - Selección de servicios habilitados por barbero (todos los barberos ofrecen todos los servicios activos).
@@ -154,9 +154,9 @@ Las barberías locales operan con agendas de papel, cuadernos y conversaciones d
 | RF-23 | Registro de *walk-in* con algoritmo de inserción que respeta las citas confirmadas. | Must | F2 |
 | RF-24 | Fila Virtual con posición y tiempo estimado de espera recalculado ante cambios. | Must | F2 |
 | RF-25 | Modo **Pantalla de TV / Kiosco**: vista de solo lectura en tiempo real (en silla, siguiente, espera estimada). | Must | F2 |
-| RF-26 | El cliente ve su turno y tiempo estimado desde la PWA. | Should | F2 |
+| RF-26 | El cliente ve su turno y tiempo estimado desde la página web (Blade/Alpine). | Should | F2 |
 | **Tiempo real** | | | |
-| RF-27 | Difusión por Reverb de los eventos de agenda, fila, silla y caja hacia dashboard, app del barbero, PWA y TV. | Must | F2 |
+| RF-27 | Difusión por Reverb de los eventos de agenda, fila, silla y caja hacia dashboard, app del barbero, página web y TV. | Must | F2 |
 | RF-28 | Reconexión automática y resincronización con *snapshot* tras pérdida del WebSocket. | Must | F2 |
 | **Finanzas** | | | |
 | RF-29 | **Motor de comisiones** con tres estrategias: `percentage`, `fixed_service` y `chair_rental`. | Must | F2 |
@@ -172,7 +172,7 @@ Las barberías locales operan con agendas de papel, cuadernos y conversaciones d
 | **Transversales** | | | |
 | RF-38 | Auditoría de operaciones críticas con valores antes/después. | Must | F1 |
 | RF-39 | Dashboard administrativo con agenda por silla y KPIs del día. | Must | F1 |
-| RF-40 | Historial de servicios del cliente en la PWA. | Could | F3 |
+| RF-40 | Historial de servicios del cliente en la página web. | Could | F3 |
 | RF-41 | Exportación y anonimización de datos personales del cliente a solicitud del titular. | Should | F3 |
 
 ---
@@ -266,7 +266,7 @@ Las barberías locales operan con agendas de papel, cuadernos y conversaciones d
 | RNF-03 | Cero overbooking: 50 solicitudes simultáneas a la misma franja producen exactamente 1 cita. |
 | RNF-04 | Cero fugas entre tenants, verificado con suite automatizada. |
 | RNF-05 | Disponibilidad objetivo del servicio ≥ 99,5 % mensual en producción. |
-| RNF-06 | PWA del cliente usable en 3G/4G: presupuesto de primera carga ≤ 2 MB transferidos y TTI ≤ 6 s en 3G rápida (dispositivo de gama media); reserva de cliente recurrente ≤ 15 s. |
+| RNF-06 | Página de reserva Blade/Alpine (ADR-005) usable en 3G/4G: primera carga ≤ 250 KB transferidos y TTI ≤ 3 s en 3G rápida (dispositivo de gama media); reserva de cliente recurrente ≤ 15 s. Flutter Web (`client_pwa`) queda experimental y fuera de la ruta crítica. |
 | RNF-07 | Modo Silla: iniciar en 1 toque, cobrar en ≤ 2 toques, respuesta visual < 100 ms, objetivos táctiles ≥ 48 dp. |
 | RNF-08 | Mobile-first desde 360 px; apps compatibles con Android 8+ (API 26) e iOS 15+. |
 | RNF-09 | Accesibilidad básica WCAG 2.1 AA: contraste, etiquetas semánticas y escala de texto hasta 1,3×. |
@@ -521,10 +521,10 @@ Si hay traslape: `ROLLBACK` y respuesta `409 SLOT_TAKEN`. La capa 2 es la autori
 |---|---|---|
 | `AppointmentConfirmed` | Se confirma una cita | Barbero, dashboard |
 | `AppointmentCancelled` | Se cancela una cita | Barbero, dashboard, motor de rescate |
-| `AppointmentStatusChanged` | `in_chair`, `completed`, `no_show` | Barbero, dashboard, TV, PWA |
-| `WalkInQueued` | Se agrega un *walk-in* | Barbero, dashboard, TV, PWA |
-| `QueueUpdated` | Cambian turnos o tiempos estimados | TV, PWA, barbero |
-| `ChairBlocked` | Bloqueo rápido o programado | Dashboard, TV, PWA (disponibilidad) |
+| `AppointmentStatusChanged` | `in_chair`, `completed`, `no_show` | Barbero, dashboard, TV, página web |
+| `WalkInQueued` | Se agrega un *walk-in* | Barbero, dashboard, TV, página web |
+| `QueueUpdated` | Cambian turnos o tiempos estimados | TV, página web, barbero |
+| `ChairBlocked` | Bloqueo rápido o programado | Dashboard, TV, página web (disponibilidad) |
 | `TransactionRegistered` | Se registra un cobro | Dashboard (caja), barbero (métricas) |
 | `CashClosed` | Se cierra la caja | Dashboard |
 
@@ -533,7 +533,7 @@ Canales (todos con autorización por tenant):
 - `private-tenant.{tenantId}.admin`
 - `private-tenant.{tenantId}.barber.{barberId}`
 - `private-tenant.{tenantId}.queue` (TV con *display token*; cliente con token)
-- `private-tenant.{tenantId}.availability.{barberId}` (PWA con token de cliente)
+- `private-tenant.{tenantId}.availability.{barberId}` (página web con token de cliente)
 
 Cada *payload* incluye `version`, `emitted_at` (UTC, ms) y `tenant_id`, para medir latencia y ordenar eventos.
 
@@ -553,7 +553,9 @@ Cada *payload* incluye `version`, `emitted_at` (UTC, ms) y `tenant_id`, para med
 | Add-on: paquetes de WhatsApp | Opcional | Opcional | Opcional |
 | Add-on: inventario / multi-sucursal | ❌ | Posterior a v1.0 | Posterior a v1.0 |
 
-> La matriz anterior es una **propuesta** derivada del PRD, que no especifica todos los límites. Se valida en OQ-01.
+> La matriz anterior es una **propuesta** derivada del PRD, que no especifica todos los límites. Fue **aprobada en G1
+> (2026-11-17)** como línea base de v1.0 (OQ-01); cualquier cambio de precios o límites pasa por control de cambios
+> (§14) y se implementa en T-330.
 
 ---
 
@@ -733,17 +735,21 @@ Escenario: ESC-26 Idempotencia al cobrar
 
 ---
 
-## 12. Preguntas abiertas (para resolver antes de G1/G2)
+## 12. Preguntas abiertas — resueltas en G1/G2 (2026-11-17)
 
-| ID | Pregunta | Impacto | Propuesta provisional |
-|---|---|---|---|
-| OQ-01 | ¿Cuál es la matriz exacta de funcionalidades y precios por plan? | RF-36, RF-37 | Usar la matriz de §9 y validar con negocio |
-| OQ-02 | El PRD menciona "sucursales" y un add-on multi-sucursal, pero el modelo núcleo no tiene tabla de sedes. ¿Se asume una sede por tenant en v1.0? | Modelo de datos, reportes | **Sí**: una sede por tenant; sedes en versión posterior |
-| OQ-03 | ¿Qué proveedor de SMS/WhatsApp entrega el OTP en F1, si WhatsApp Business API llega recién en F3? | RF-10, RF-35 | Interfaz `OtpChannel` con proveedor SMS en F1 (ADR-006) y WhatsApp en F3 |
-| OQ-04 | ¿Qué pasarela de pagos se usará para suscripciones? | RF-36 | Decidir en ADR antes de F3 (Wompi/Stripe/otra) |
-| OQ-05 | ¿Se permitirán propinas, descuentos o servicios adicionales al cobrar? | RN-31 | Excluido en v1.0 (backlog) |
-| OQ-06 | ¿El tamaño de Flutter Web cumple el presupuesto de 3G? | RNF-06 | *Spike* en F0 (T-009); alternativa: página de reserva liviana en Blade/Alpine |
-| OQ-07 | ¿Qué efectivo "en caja" excluye pagos de liquidación a barberos? | RN-39 | v1.0 solo registra efectivo esperado vs. contado; retiros de caja en backlog |
+| ID | Pregunta | Impacto | Propuesta provisional | Resolución |
+|---|---|---|---|---|
+| OQ-01 | ¿Cuál es la matriz exacta de funcionalidades y precios por plan? | RF-36, RF-37 | Usar la matriz de §9 y validar con negocio | **Aceptada.** Matriz de §9 como línea base de v1.0; ajustes de precio o límites vía control de cambios y T-330. |
+| OQ-02 | El PRD menciona "sucursales" y un add-on multi-sucursal, pero el modelo núcleo no tiene tabla de sedes. ¿Se asume una sede por tenant en v1.0? | Modelo de datos, reportes | **Sí**: una sede por tenant; sedes en versión posterior | **Aceptada.** Una sede por tenant en v1.0; multi-sucursal permanece en el backlog (§13). |
+| OQ-03 | ¿Qué proveedor de SMS/WhatsApp entrega el OTP en F1, si WhatsApp Business API llega recién en F3? | RF-10, RF-35 | Interfaz `OtpChannel` con proveedor SMS en F1 (ADR-006) y WhatsApp en F3 | **Aceptada.** SMS transaccional en F1 detrás de `OtpChannel` (ADR-006) y WhatsApp Cloud API en F3. |
+| OQ-04 | ¿Qué pasarela de pagos se usará para suscripciones? | RF-36 | Decidir en ADR antes de F3 (Wompi/Stripe/otra) | **Aceptada.** Se decide en ADR-008 antes de F3 (T-331); no bloquea F1. |
+| OQ-05 | ¿Se permitirán propinas, descuentos o servicios adicionales al cobrar? | RN-31 | Excluido en v1.0 (backlog) | **Aceptada.** Sin propinas, descuentos ni adicionales en v1.0; quedan en el backlog. |
+| OQ-06 | ¿El tamaño de Flutter Web cumple el presupuesto de 3G? | RNF-06 | *Spike* en F0 (T-009); alternativa: página de reserva liviana en Blade/Alpine | **Resuelta.** Flutter Web no cumple (2,32 MB, sin LCP/TTI medibles); el embudo público pasa a página Blade/Alpine (ADR-005) y `client_pwa` queda experimental (T-160…T-165 re-planificadas). |
+| OQ-07 | ¿Qué efectivo "en caja" excluye pagos de liquidación a barberos? | RN-39 | v1.0 solo registra efectivo esperado vs. contado; retiros de caja en backlog | **Aceptada.** Solo efectivo esperado vs. contado; retiros de caja en el backlog. |
+
+> **Acta de puertas:** G1 y G2 aprobadas por Diego Alejandro Zamora Gallego el 2026-11-17. Las propuestas de
+> OQ-01…OQ-05 y OQ-07 se aceptan tal cual; OQ-06 se resuelve con ADR-005. El cambio de alcance asociado se registra
+> en §14.
 
 ---
 
@@ -758,3 +764,12 @@ Escenario: ESC-26 Idempotencia al cobrar
 - Panel de plataforma (*super-admin*) de Bloxysoft.
 - Lista de espera inteligente y reprogramación automática.
 - Reportes avanzados y tablero de retención de clientes.
+
+---
+
+## 14. Registro de cambios
+
+| ID | Fecha | Cambio | Justificación | Puerta |
+|---|---|---|---|---|
+| CC-01 | 2026-11-17 | Aprobación de la especificación; OQ-01…OQ-07 resueltas en §12; matriz de planes de §9 aceptada como línea base. | Cierre de G1 y de las preguntas abiertas que bloqueaban F1. | G1 |
+| CC-02 | 2026-11-17 | Enmienda de alcance por ADR-005: el embudo público de reserva se sirve con Blade/Alpine y RNF-06 pasa a ≤ 250 KB/TTI ≤ 3 s; `client_pwa` queda experimental. Se re-planifican T-160…T-165 y se crea T-100 para validar Docker y CI remoto. | El *spike* T-009 midió 2,32 MB (> 2 MB) y TTI no medible; la validación de infraestructura no era posible en F0. | G2 |
