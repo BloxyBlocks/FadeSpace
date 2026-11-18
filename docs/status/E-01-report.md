@@ -334,6 +334,7 @@ PowerShell **7.7.0**. Repositorio público `BloxyBlocks/FadeSpace`, rama `main`.
 | Calidad local | `composer lint` / `compose analyse` / `composer test` | Pint 49 archivos PASS · PHPStan sin errores · **14 pruebas / 71 aserciones** |
 | CI remoto | GitHub Actions sobre `accd5ed` | **success** ([run 44215818457](https://github.com/BloxyBlocks/FadeSpace/actions/runs/44215818457)) |
 | Protección de `main` | `GET /repos/.../branches/main` y `.../protection` | `protected=true`; 3 checks; `strict=true`; `enforce_admins=true`; *force push* y borrado deshabilitados; historial lineal y conversaciones resueltas |
+| Flujo de PR | PR [#1](https://github.com/BloxyBlocks/FadeSpace/pull/1) y [#2](https://github.com/BloxyBlocks/FadeSpace/pull/2) | 3 checks verdes en cada uno; fusión con *squash* y borrado de rama; `main` actualizada por PR |
 
 ### 9.2 Defectos reales encontrados y corregidos
 
@@ -357,9 +358,10 @@ aprobación de otra persona). El resto de la política (checks obligatorios, *st
 historial lineal y conversaciones resueltas) se mantiene. Se restaurarán ambas reglas al incorporar un segundo
 colaborador.
 
-### 9.4 Pendiente
+### 9.4 Estado posterior
 
-- Verificar el primer *pull request* real bajo la política (primera tarea de F1).
+- El flujo de PR quedó demostrado con los PR #1 y #2: checks obligatorios, *strict*, revisión con 0 aprobaciones y
+  fusión con *squash*; CI verde en `main` tras cada fusión.
 - T-008 conserva su validación en dispositivo real y bajo carga (T-206/T-207).
 
 ---

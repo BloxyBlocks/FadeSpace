@@ -290,7 +290,7 @@
 | T-012 | `[x]` | `mobile/` (6 paquetes), `flutter analyze` limpio, 25 pruebas | — |
 | T-013 | `[x]` | `docs/adr/ADR-001…007`, `ADR-010` | — |
 | T-014 | `[x]` | `app/Infrastructure/Observability/`, `/api/v1/health` | — |
-| T-100 | `[x]` | Docker Compose, CI remoto y protección de rama verificados el 2026-11-17 | Primer PR real bajo la política |
+| T-100 | `[x]` | Docker Compose, CI remoto y protección de rama verificados el 2026-11-17; PR #1 y #2 fusionados con *squash* | — |
 
 ---
 

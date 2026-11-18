@@ -84,7 +84,8 @@ un check que nunca aparecerá.
 - [x] **T-100:** pipeline ejecutado en GitHub (verde) y protección real aplicada y verificada:
       3 checks obligatorios, *strict*, `enforce_admins`, sin *force push* ni borrado, historial lineal y
       conversaciones resueltas.
-- [ ] Verificar el primer *pull request* real bajo la política (se hará en la primera tarea de F1).
+- [x] Verificar el primer *pull request* real bajo la política: PR **#1** y **#2** fusionados con *squash* y los
+      3 checks en verde.
 
 ## 5. Riesgos y mantenimiento
 
