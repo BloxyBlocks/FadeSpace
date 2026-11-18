@@ -62,6 +62,7 @@ protección de rama aplicada (validado en T-100 el 2026-11-17).
   aplicar la protección de rama con `scripts/apply-branch-protection.ps1`. Cierra T-010 y T-011. _(RNF-18, C-08, C-15)_
       → **Completada el 2026-11-17.** Repositorio público `BloxyBlocks/FadeSpace`; CI verde en `accd5ed`; stack local
       arriba con migraciones y *seed*; `/api/v1/health` → 200; protección de `main` aplicada y verificada por API.
+      Los PR **#1** y **#2** se fusionaron con *squash* tras los 3 checks, validando el flujo completo.
       La ejecución real detectó y corrigió tres defectos que CI no cubría: *factory* de `User` no resoluble por el
       *namespace* del modelo, extensión `pcntl` ausente (Reverb) y Nginx con IP obsoleta de `app` tras recrearlo.
 
