@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — FadeSpace
 
-**Versión:** 1.2  
-**Estado:** F0 cerrada en G2 (2026-11-17) · validación de infraestructura trasladada a T-100 · F1–F3 pendientes  
+**Versión:** 1.3  
+**Estado:** F0 cerrada en G2 (2026-11-17) · infraestructura validada en entorno real (T-100) · F1–F3 pendientes  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Regla:** ningún requisito se cierra en G4 sin módulo, tarea y prueba asociados (C-02).
 
@@ -24,14 +24,14 @@
 | C-05 | Cero overbooking | *Hold* (Lua) + `FOR UPDATE`; prueba de concurrencia | T-135, T-136, T-140, T-141 | Pendiente |
 | C-06 | Dinero exacto e inmutable | `Money` (`bcmath`), tabla de solo inserción, reversos; pruebas de propiedades | T-131, T-210, T-211, T-212, T-213 | Pendiente |
 | C-07 | Clean Architecture | Pruebas de arquitectura en CI | T-006 | Completado (F0) |
-| C-08 | Estándares de código | Pint (PSR-12), Larastan nivel 8, `flutter analyze` en CI | T-005, T-011, T-012, T-100 | En curso (F0; CI remoto se ejecuta en T-100) |
+| C-08 | Estándares de código | Pint (PSR-12), Larastan nivel 8, `flutter analyze` en CI | T-005, T-011, T-012, T-100 | Cumple (CI remoto verde y protección de `main` aplicada) |
 | C-09 | Tiempo real < 200 ms | Métrica `emitted_at`, monitor sintético y carga WS | T-008, T-203, T-206, T-207 | En curso (F0: p95 18,8 ms en local; carga real pendiente) |
 | C-10 | Mobile-first y ergonomía | Tema de Modo Silla, *golden tests*, checklist 360 px | T-012, T-220, T-223, T-225, T-343 | Pendiente |
 | C-11 | Zero-Login seguro | OTP con *hash*, límites de tasa, token de alcance limitado | T-137, T-138 | Pendiente |
 | C-12 | Seguridad y privacidad | Autenticación, consentimiento, anonimización, revisión OWASP | T-108, T-139, T-312, T-341, T-342 | Pendiente |
 | C-13 | Rendimiento y recursos | Índices, caché Redis, `preventLazyLoading`, presupuesto de la página de reserva | T-105, T-130, T-133, T-164 | Pendiente |
 | C-14 | Observabilidad y auditoría | `RequestContext`, logs JSON, `audit_logs` | T-014, T-146, T-154 | Completado (F0, base; auditoría en F1) |
-| C-15 | Calidad verificable | CI obligatorio; DoD por tarea; suites críticas (aislamiento, concurrencia, dinero) | T-011, T-100, T-110, T-141 | En curso (F0; CI remoto se ejecuta en T-100) |
+| C-15 | Calidad verificable | CI obligatorio; DoD por tarea; suites críticas (aislamiento, concurrencia, dinero) | T-011, T-100, T-110, T-141 | Cumple en F0 (checks obligatorios en `main`; suites críticas llegan con F1/F2) |
 | C-16 | Puertas de aprobación | Revisión humana en G1-G4 y *release gates* | T-007, T-172, T-251, T-346 | En curso (G1/G2 aprobadas 2026-11-17; G3/G4 pendientes) |
 | C-17 | Simplicidad sostenible | ADR por dependencia; backlog separado | T-013, T-345 | Completado (F0; ADR-001…007 y 010) |
 | C-18 | Tiempo y zona horaria | `Clock`, UTC en almacenamiento, `scheduled_date` local | T-131, T-130 | Pendiente |
@@ -139,12 +139,12 @@
 | RNF-10 | Sanctum, `RateLimiter`, TLS/WSS | T-108, T-342 | `tests/Feature/Auth/*`, checklist OWASP ASVS | Pendiente |
 | RNF-11 | Consentimiento, anonimización, minimización | T-139, T-341 | `tests/Feature/Privacy/*` + revisión documental | Pendiente |
 | RNF-12 | `RequestContext`, logs JSON, métricas | T-014, T-206 | `tests/Feature/Observability/*` (formato JSON y enmascarado) + alertas configuradas | En curso (F0, base; métricas/alertas en F2) |
-| RNF-13 | Pint, Larastan, `flutter analyze`, cobertura | T-005, T-011 | `composer quality` y `melos exec … flutter test` en verde + pipeline de CI | En curso (F0; CI remoto pendiente) |
+| RNF-13 | Pint, Larastan, `flutter analyze`, cobertura | T-005, T-011 | `composer quality` y `melos exec … flutter test` en verde + pipeline de CI remoto | Cumple en F0 (run 44215818457 verde; cobertura formal llega con F1) |
 | RNF-14 | Índices, `preventLazyLoading`, *eager loading* | T-005, T-130, T-133 | `preventLazyLoading` activo en `EloquentServiceProvider`; `tests/Feature/Performance/NoLazyLoadingTest` + `EXPLAIN` en F1 | En curso (F0; índices en F1) |
 | RNF-15 | Degradación segura sin Redis; sondeo | T-208, T-228, T-344 | `tests/Integration/Resilience/RedisDownTest` (ESC-25) | Pendiente |
 | RNF-16 | l10n `es-CO`, `COP`, `America/Bogota` | T-012, T-106 | ARB `es`/`es_CO` + `flutter gen-l10n`; `TenantSettings` en F1 | En curso (F0; tenant settings en F1) |
 | RNF-17 | Respaldos MySQL y restauración | T-170, T-345 | Simulacro de restauración documentado | Pendiente |
-| RNF-18 | Aplicación *stateless*, Reverb con Redis | T-010, T-100, T-201 | `compose.yaml` (6 servicios, *healthchecks*) + prueba con 2 nodos | En curso (T-100 valida compose; escalado en T-201) |
+| RNF-18 | Aplicación *stateless*, Reverb con Redis | T-010, T-100, T-201 | `compose.yaml` (6 servicios, *healthchecks*) + prueba con 2 nodos | Cumple en local (T-100: stack, *seed* y Reverb validados; escalado en T-201) |
 | RNF-19 | `X-Client-Version`, `/api/v1`, OpenAPI | T-221, T-345 | `tests/Feature/Api/ClientVersionTest` + contrato OpenAPI | Pendiente |
 | RNF-20 | Migraciones expandir → contraer | T-011, T-345 | Workflow de CI definido; revisión en CI y *runbook* de despliegue | En curso (F0; migraciones en F1) |
 
@@ -285,12 +285,12 @@
 | T-007 | `[x]` | Acta G1/G2 del 2026-11-17 (`01-spec.md` §12/§14, `02-plan.md` §14) | — |
 | T-008 | `[~]` | `spikes/t008/latency-40.json`, ADR-004 | Dispositivo real y carga (T-206/T-207) |
 | T-009 | `[x]` | `spikes/t009/*`, ADR-005 aplicado | Presupuesto de la página Blade en T-164 (F1) |
-| T-010 | `[~]` | `compose.yaml`, `infra/docker/*` | **Bloqueo externo → T-100** |
-| T-011 | `[~]` | `.github/workflows/ci.yml`, `infra/github/branch-protection.json`, `docs/ci.md` | **Bloqueo externo → T-100** |
+| T-010 | `[x]` | `compose.yaml`, `infra/docker/*`; stack de 6 servicios arriba, `migrate:fresh --seed` y `/api/v1/health` 200 (T-100) | — |
+| T-011 | `[x]` | `.github/workflows/ci.yml`, `infra/github/branch-protection.json`, `docs/ci.md`; CI verde (run 44215818457) y `main` protegida | — |
 | T-012 | `[x]` | `mobile/` (6 paquetes), `flutter analyze` limpio, 25 pruebas | — |
 | T-013 | `[x]` | `docs/adr/ADR-001…007`, `ADR-010` | — |
 | T-014 | `[x]` | `app/Infrastructure/Observability/`, `/api/v1/health` | — |
-| T-100 | `[ ]` | — | Docker Compose, pipeline remoto y protección de rama (precondición de F1) |
+| T-100 | `[x]` | Docker Compose, CI remoto y protección de rama verificados el 2026-11-17 | Primer PR real bajo la política |
 
 ---
 
@@ -301,3 +301,4 @@
 | 1.0 | 2026-11-14 | Versión inicial de la documentación SEDD de FadeSpace | Diego Alejandro Zamora Gallego |
 | 1.1 | 2026-11-14 | Avance de E-01: T-005, T-006, T-012, T-013 y T-014 completadas; T-008…T-011 en curso con evidencia en `spikes/`; ADR-001…007 y 010 registrados | Diego Alejandro Zamora Gallego |
 | 1.2 | 2026-11-17 | Cierre de E-01: T-007 aprobada (G1/G2); T-009 con ADR-005 aplicado; T-160…T-165 re-planificadas a Blade/Alpine; alta de T-100 (traslado de T-010/T-011); RNF-06 pasa a ≤ 250 KB/TTI ≤ 3 s | Diego Alejandro Zamora Gallego |
+| 1.3 | 2026-11-17 | T-100 completada: T-010 y T-011 pasan a `[x]`; CI remoto verde y `main` protegida con 3 checks obligatorios; C-08, C-15, RNF-13 y RNF-18 actualizados | Diego Alejandro Zamora Gallego |

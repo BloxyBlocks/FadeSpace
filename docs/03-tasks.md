@@ -1,7 +1,7 @@
 # Tareas — FadeSpace
 
-**Versión:** 1.1  
-**Estado:** F0 cerrada en G2 (2026-11-17) · validación de infraestructura trasladada a T-100 · F1–F3 pendientes  
+**Versión:** 1.2  
+**Estado:** F0 cerrada en G2 (2026-11-17) · infraestructura validada en entorno real (T-100) · F1–F3 pendientes  
 **Autor:** Diego Alejandro Zamora Gallego  
 **Depende de:** `02-plan.md`
 
@@ -34,10 +34,10 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
       → Medido en local: 40/40 eventos, p50 **17,808 ms**, p95 **18,820 ms** (`spikes/t008/`), ADR-004 escrito y cliente en `fadespace_realtime`. **Pendiente:** validación en dispositivo real y bajo carga (T-206/T-207).
 - [x] **T-009** *Spike* de peso y TTI de Flutter Web en 3G; decidir **ADR-005** (Flutter Web vs. página de reserva liviana). _(RNF-06, OQ-06)_
       → Medido: primera carga real **2,32 MB** (> 2 MB de RNF-06), FCP 4,67 s, sin LCP/TTI medibles; variante wasm 1,90 MB como mejor caso (`spikes/t009/`). **ADR-005 ratificado el 2026-11-14 y aplicado el 2026-11-17**: página Blade/Alpine para el embudo público; el presupuesto definitivo (≤ 250 KB, TTI ≤ 3 s) se verifica en T-164 (F1).
-- [~] **T-010** Docker Compose local: PHP-FPM, Nginx, MySQL 8, Redis 7, Mailpit, Reverb. Dep. T-005. _(RNF-18)_
-      → `compose.yaml` + `infra/docker/{php,nginx}` escritos (6 servicios, *healthchecks*, redes y volúmenes). **Bloqueo externo:** sin Docker en F0; la validación con `docker compose config/up` y migraciones se traslada a **T-100** (precondición de F1).
-- [~] **T-011** Pipeline de CI: Pint, Larastan, Pest, `composer audit`, `flutter analyze`, `flutter test`; protección de ramas. Dep. T-005, T-012. _(C-08, C-15, RNF-13)_
-      → `.github/workflows/ci.yml` (jobs backend/mobile/infra) y política de ramas (`infra/github/branch-protection.json` + `scripts/apply-branch-protection.ps1`, `docs/ci.md`). **Bloqueo externo:** no hay repositorio remoto ni `gh` en F0; la primera ejecución y la protección real se trasladan a **T-100**.
+- [x] **T-010** Docker Compose local: PHP-FPM, Nginx, MySQL 8, Redis 7, Mailpit, Reverb. Dep. T-005. _(RNF-18)_
+      → `compose.yaml` + `infra/docker/{php,nginx}` (6 servicios, *healthchecks*, redes y volúmenes). **Validada el 2026-11-17 en T-100:** `docker compose config` OK, `up -d --build` con los 6 servicios arriba (MySQL, Redis y Mailpit *healthy*), `migrate:fresh --seed` correcto y `GET /api/v1/health` → **200** con `database` y `cache` en `up`. La validación real corrigió dos defectos: falta de `pcntl` en la imagen PHP (Reverb no arrancaba) y resolución DNS estática en Nginx (502 al recrear `app`).
+- [x] **T-011** Pipeline de CI: Pint, Larastan, Pest, `composer audit`, `flutter analyze`, `flutter test`; protección de ramas. Dep. T-005, T-012. _(C-08, C-15, RNF-13)_
+      → `.github/workflows/ci.yml` (jobs backend/mobile/infra), política de ramas (`infra/github/branch-protection.json` + `scripts/apply-branch-protection.ps1`) y `docs/ci.md`. **Validada el 2026-11-17 en T-100:** CI remoto **verde** en `main` ([run 44215818457](https://github.com/BloxyBlocks/FadeSpace/actions/runs/44215818457)) y protección aplicada y verificada por API: 3 *status checks* obligatorios, *strict*, `enforce_admins`, sin *force push* ni borrado, historial lineal y conversaciones resueltas. Aprobaciones de PR = **0** mientras exista un solo *maintainer* (GitHub no permite autoaprobar); se elevará a 1 al incorporar un segundo.
 - [x] **T-012** *Scaffold* Flutter con `melos`: `apps/barber_app`, `apps/client_pwa`, `packages/{fadespace_core, fadespace_api, fadespace_realtime, fadespace_ui}`; `very_good_analysis`; l10n `es-CO`. _(C-10, RNF-16)_
       → Melos 8.10.1 + *pub workspaces*; 6 paquetes; `flutter analyze` limpio y pruebas en verde (25 pruebas). l10n `es` + `es_CO` con `flutter gen-l10n`. Flutter 3.50 exige `material_ui`/`cupertino_ui` (ADR-010).
 - [x] **T-013** Redactar ADR-001, 002, 003, 006 y 007 (multi-tenant, autenticación, locking, proveedor OTP, estado/navegación Flutter). _(C-17)_
@@ -45,22 +45,25 @@ Cada tarea indica entre paréntesis los requisitos que cubre. El primer dígito 
 - [x] **T-014** Observabilidad base: `RequestContext` (`request_id`, `tenant_id`), logs JSON con enmascarado de teléfonos, endpoint de salud. _(C-14, RNF-12)_
       → `Infrastructure/Observability/` (`RequestContext`, `AssignRequestContext`, `ConfigureStructuredLogging`, `MaskSensitiveData`, `RequestContextProcessor`, `HealthChecker`) y `GET /api/v1/health`; cubierto por 6 pruebas.
 
-**Criterio de salida F0:** G1 y G2 aprobadas; *spikes* T-008 y T-009 resueltos con ADR; CI en verde (la primera
-ejecución remota se valida en T-100, porque F0 no dispuso de repositorio GitHub).
+**Criterio de salida F0:** G1 y G2 aprobadas; *spikes* T-008 y T-009 resueltos con ADR; CI en verde y
+protección de rama aplicada (validado en T-100 el 2026-11-17).
 
-> **Estado al 2026-11-17:** **E-01 cerrada.** G1/G2 firmadas (T-007) y OQ-01…OQ-07 resueltas. T-005, T-006, T-009 y
-> T-012…T-014 completadas y verificadas localmente. T-008 queda `[~]` por la validación en dispositivo real y bajo
-> carga (T-206/T-207). T-010 y T-011 conservan `[~]` con bloqueo externo y su validación se traslada a **T-100**,
-> primera tarea de F1.
+> **Estado al 2026-11-17:** **E-01 cerrada y validada en entorno real.** G1/G2 firmadas (T-007) y OQ-01…OQ-07
+> resueltas. T-005, T-006, T-009, T-010, T-011 y T-012…T-014 completadas; **T-100 completada**. T-008 queda `[~]`
+> por la validación en dispositivo real y bajo carga (T-206/T-207). El CI remoto está verde y `main` está protegida;
+> queda abierta la verificación del primer PR real bajo la nueva política.
 
 ---
 
 ## F1 — MVP Core
 
-- [ ] **T-100** *(precondición de F1)* Validar la infraestructura de F0 en un entorno real: `docker compose config`,
+- [x] **T-100** *(precondición de F1)* Validar la infraestructura de F0 en un entorno real: `docker compose config`,
   `docker compose up -d --build` y `php artisan migrate --seed`; crear el repositorio remoto, ejecutar el pipeline y
   aplicar la protección de rama con `scripts/apply-branch-protection.ps1`. Cierra T-010 y T-011. _(RNF-18, C-08, C-15)_
-      → Requiere Docker Desktop, repositorio GitHub y `gh auth`; ninguno estaba disponible al cerrar E-01.
+      → **Completada el 2026-11-17.** Repositorio público `BloxyBlocks/FadeSpace`; CI verde en `accd5ed`; stack local
+      arriba con migraciones y *seed*; `/api/v1/health` → 200; protección de `main` aplicada y verificada por API.
+      La ejecución real detectó y corrigió tres defectos que CI no cubría: *factory* de `User` no resoluble por el
+      *namespace* del modelo, extensión `pcntl` ausente (Reverb) y Nginx con IP obsoleta de `app` tras recrearlo.
 
 ### E-02 Multi-tenancy e identidad
 
@@ -261,3 +264,4 @@ ejecución remota se valida en T-100, porque F0 no dispuso de repositorio GitHub
 |---|---|---|
 | 1.0 | 2026-11-14 | Versión inicial de la lista de tareas y trazabilidad. |
 | 1.1 | 2026-11-17 | Cierre de E-01: T-007 aprobada (G1/G2); T-160…T-165 re-planificadas a Blade/Alpine por ADR-005; alta de T-100 para validar Docker y CI remoto (traslado de T-010/T-011). |
+| 1.2 | 2026-11-17 | **T-100 completada:** T-010 y T-011 pasan a `[x]` tras validar Docker Compose, migraciones/*seed*, CI remoto verde y protección de `main` en GitHub. |
