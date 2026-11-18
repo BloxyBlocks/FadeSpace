@@ -17,7 +17,7 @@ RUN apt-get update \
         libzip-dev \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" bcmath gd intl opcache pdo_mysql zip \
+    && docker-php-ext-install -j"$(nproc)" bcmath gd intl opcache pcntl pdo_mysql zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
