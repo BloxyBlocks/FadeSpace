@@ -352,8 +352,9 @@ La validación en entorno real encontró tres fallos que el CI no podía detecta
 
 La política original exigía **1 aprobación de PR** con `enforce_admins=true`. Al ser un repositorio con un solo
 *maintainer*, GitHub no permite autoaprobar y ningún PR podría fusionarse. Con aprobación explícita del autor se
-ajustó `required_approving_review_count` a **0**; el resto de la política (checks obligatorios, *strict*, sin *force
-push* ni borrado, historial lineal y conversaciones resueltas) se mantiene. Se elevará a 1 al incorporar un segundo
+ajustó `required_approving_review_count` a **0** y `require_last_push_approval` a **false** (también exige la
+aprobación de otra persona). El resto de la política (checks obligatorios, *strict*, sin *force push* ni borrado,
+historial lineal y conversaciones resueltas) se mantiene. Se restaurarán ambas reglas al incorporar un segundo
 colaborador.
 
 ### 9.4 Pendiente

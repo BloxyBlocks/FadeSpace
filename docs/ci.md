@@ -49,8 +49,9 @@ El *merge* a `main` debe exigir:
 
 1. *Pull request* con descarte de aprobaciones obsoletas. **Aprobaciones requeridas: 0** mientras el repositorio tenga
    un solo *maintainer*: GitHub no permite aprobar el propio PR y `enforce_admins` impide saltarse la regla, así que
-   exigir 1 aprobación bloquearía todos los *merges*. Se elevará a **1** (`required_approving_review_count`) al
-   incorporar un segundo colaborador.
+   exigir 1 aprobación bloquearía todos los *merges*. Por el mismo motivo, `require_last_push_approval` está en
+   `false` (exigiría que otra persona aprobara el último *push*). Se elevará a **1** aprobación y se activará esa
+   regla al incorporar un segundo colaborador.
 2. Todos los *status checks* del pipeline en verde, con la rama actualizada respecto a `main` (*strict*).
 3. Conversaciones resueltas.
 4. Prohibido el *force push* y el borrado de la rama.
