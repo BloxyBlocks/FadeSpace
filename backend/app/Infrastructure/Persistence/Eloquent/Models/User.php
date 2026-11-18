@@ -20,6 +20,17 @@ class User extends Authenticatable
     use Notifiable;
 
     /**
+     * El modelo no vive en App\Models, así que la resolución automática del
+     * factory generaría Database\Factories\Infrastructure\...\UserFactory.
+     *
+     * @return UserFactory
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

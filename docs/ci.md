@@ -1,7 +1,7 @@
 # Integración continua y protección de ramas
 
-**Estado:** pipeline definido y ejecutable localmente; **validación remota trasladada a T-100** (no existe repositorio
-GitHub todavía). Ver `docs/status/E-01-report.md`.
+**Estado:** pipeline **ejecutado en verde** en `BloxyBlocks/FadeSpace` (run `44215818457`, 2026-11-17) y protección de
+`main` **aplicada y verificada** por API. Ver `docs/status/E-01-report.md` §10.
 
 ## 1. Pipeline
 
@@ -47,7 +47,10 @@ docker compose config --quiet
 
 El *merge* a `main` debe exigir:
 
-1. *Pull request* con al menos **1 aprobación** y descarte de aprobaciones obsoletas.
+1. *Pull request* con descarte de aprobaciones obsoletas. **Aprobaciones requeridas: 0** mientras el repositorio tenga
+   un solo *maintainer*: GitHub no permite aprobar el propio PR y `enforce_admins` impide saltarse la regla, así que
+   exigir 1 aprobación bloquearía todos los *merges*. Se elevará a **1** (`required_approving_review_count`) al
+   incorporar un segundo colaborador.
 2. Todos los *status checks* del pipeline en verde, con la rama actualizada respecto a `main` (*strict*).
 3. Conversaciones resueltas.
 4. Prohibido el *force push* y el borrado de la rama.
@@ -77,8 +80,10 @@ un check que nunca aparecerá.
 - [x] Workflow escrito con Pint, Larastan, Pest, `composer audit`, `flutter analyze` y `flutter test`.
 - [x] Política de protección de ramas versionada (JSON + script).
 - [x] Documentación de los checks y de su mantenimiento.
-- [ ] **Pendiente de T-100:** ejecutar el pipeline en GitHub y aplicar la protección real (requiere repositorio remoto y
-      permisos de administrador; no disponible en el entorno de F0).
+- [x] **T-100:** pipeline ejecutado en GitHub (verde) y protección real aplicada y verificada:
+      3 checks obligatorios, *strict*, `enforce_admins`, sin *force push* ni borrado, historial lineal y
+      conversaciones resueltas.
+- [ ] Verificar el primer *pull request* real bajo la política (se hará en la primera tarea de F1).
 
 ## 5. Riesgos y mantenimiento
 
@@ -89,3 +94,4 @@ un check que nunca aparecerá.
 | CI lento por `flutter pub get` | Caché de `flutter-action`; Melos evita resolver por paquete. |
 | Falso verde en móvil si un paquete no tiene `test/` | `melos exec` informa cuántos paquetes ejecutó; se revisa la salida. |
 | Dependencias vulnerables | `composer audit` en cada *push*; alertas de Dependabot recomendadas al crear el repositorio. |
+| Repositorio con un solo *maintainer* | Aprobaciones en 0 y `enforce_admins`; al añadir un segundo colaborador se sube a 1 y se reaplica el JSON. |
